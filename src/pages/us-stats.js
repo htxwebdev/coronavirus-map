@@ -1,8 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import L from 'leaflet';
 import { useTracker } from '../hooks';
-import { commafy, friendlyDate } from '../lib/util';
+import { commafy } from '../lib/util';
 
 import Layout from 'components/Layout';
 import Container from 'components/Container';
@@ -14,8 +13,7 @@ const USPage = () => {
         api: 'states'
     });
     const hasStates = Array.isArray(stateStats) && stateStats.length > 0;
-    console.log(stateStats);
-    console.log(hasStates);
+
 
     if (!hasStates) return (
 

@@ -13,7 +13,7 @@ const Header = () => {
             <Link to="/">Global Map</Link>
           </li>
           <li>
-            <Link to="/us-stats">U.S. Stats</Link>
+            <Link to="/us-map">U.S. Map</Link>
           </li>
         </ul>
       </Container>

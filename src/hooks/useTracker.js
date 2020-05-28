@@ -16,6 +16,10 @@ const ENDPOINTS = [
     {
         id: 'states',
         path: '/states'
+    },
+    {
+        id: 'united-states',
+        path: '/countries/United%20States'
     }
 ]
 

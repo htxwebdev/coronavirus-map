@@ -7,33 +7,27 @@ import { commafy, friendlyDate } from '../lib/util';
 import Layout from 'components/Layout';
 import Container from 'components/Container';
 import Map from 'components/Map';
+import { stateLocations } from '../data/state-locations';
 
 const LOCATION = {
-  lat: 0,
-  lng: 0,
+  lat: 38,
+  lng: -96,
 };
+
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 2;
+const DEFAULT_ZOOM = 4;
 
-const IndexPage = () => {
+const USPage = () => {
 
-  /**
-   * mapEffect
-   * @description Fires a callback once the page renders
-   * @example Here this is and example of being used to zoom in and set a popup on load
-   */
-
-  const { data: countries = [] } = useTracker({
-    api: 'countries'
+  const { data: stateStats = [] } = useTracker({
+    api: 'states'
   });
 
   const { data: stats = [] } = useTracker({
-    api: 'all'
+    api: 'united-states'
   });
 
-  console.log(countries);
-
-  const hasCountries = Array.isArray(countries) && countries.length > 0;
+  const hasStates = Array.isArray(stateStats) && stateStats.length > 0;
 
   const dashboardStats = [
     {
@@ -91,17 +85,26 @@ const IndexPage = () => {
   ]
 
   async function mapEffect({ leafletElement: map } = {}) {
-    if (!hasCountries) return;
+    if (!hasStates) return;
+
+    const stateInfoArray = stateStats.map(item => {
+      let locationFound = stateLocations.filter(loc => { return loc.state === item.state })
+      if (locationFound.length) {
+        item.lat = locationFound[0].latitude;
+        item.lng = locationFound[0].longitude;
+        return item
+      }
+    }).filter(item => item != undefined);
+    console.log(stateInfoArray);
 
     const geoJson = {
       type: 'FeatureCollection',
-      features: countries.map((country = {}) => {
-        const { countryInfo = {} } = country;
-        const { lat, long: lng } = countryInfo;
+      features: stateInfoArray.map((stateInstance = {}) => {
+        const { lat, lng } = stateInstance;
         return {
           type: 'Feature',
           properties: {
-            ...country
+            ...stateInstance
           },
           geometry: {
             type: 'Point',
@@ -118,11 +121,10 @@ const IndexPage = () => {
         let casesString;
 
         const {
-          country,
+          state,
           updated,
           cases,
-          deaths,
-          recovered
+          deaths
         } = properties
 
         casesString = `${cases}`;
@@ -138,11 +140,10 @@ const IndexPage = () => {
         const html = `
           <span class="icon-marker">
             <span class="icon-marker-tooltip">
-              <h2>${country}</h2>
+              <h2>${state}</h2>
               <ul>
                 <li><strong>Confirmed:</strong> ${cases}</li>
                 <li><strong>Deaths:</strong> ${deaths}</li>
-                <li><strong>Recovered:</strong> ${recovered}</li>
                 <li><strong>Last Update:</strong> ${updatedFormatted}</li>
               </ul>
             </span>
@@ -214,4 +215,4 @@ const IndexPage = () => {
   );
 };
 
-export default IndexPage;
+export default USPage;
